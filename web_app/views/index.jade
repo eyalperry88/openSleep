@@ -9,32 +9,30 @@ html(lang="en")
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     script(src='/js/multithread.js')
     script(src='/js/d3.v4.min.js')
+    script(src='/js/hr.js')
     script(src='/js/script.js')
  body
     #title openSleep
     img(src="img/zzz.svg" id="zzz")
     #user
       #user-first-name.user-elem
-        .user-label First Name 
+        .user-label First Name
         input(type="text", name="first_name" id="first-name")
       #user-last-name.user-elem
-        .user-label Last Name 
+        .user-label Last Name
         input(type="text", name="last_name" id="last-name")
       #user-age.user-elem
-        .user-label Age 
+        .user-label Age
         input(type="text", name="age" id="age")
       #user-gender.user-elem
         .user-label Gender
         select#gender
           option(value="male") Male
           option(value="female") Female
-          option(value="undefined") Undefined
+          option(value="undefined" selected) Undefined
       #user-file.user-elem
         .user-label File Name
         input(type="text", name="file" id="file")
-      #user-buttons.user-elem
-        input(type="submit" value="Start recording" id="submit")
-        #recording
     #channels
       #channel-bpm.channel
         .channel-name BPM
@@ -45,4 +43,8 @@ html(lang="en")
       #channel-eda.channel
         .channel-name EDA
         #eda.channel-value 0
-    svg(width="1200" height="500" id="plot") 
+    svg(width="1200" height="500" id="plot")
+    #buttons
+        input(type="submit" value="Start Session" id="record")
+        input(type="submit" value="Calibrating..." id="calibrate")
+        input(type="submit" value="Wakeup" id="wakeup")

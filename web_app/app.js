@@ -8,7 +8,7 @@ var noble = require('../noble'),
     rfduino = require('./rfduino'),
     _ = require('underscore');
 
- // Set Up HTTP Server                                                                                                                                                                                                                  
+ // Set Up HTTP Server
 var express = require('express');
 var app = express();
 
@@ -16,9 +16,17 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.static(__dirname + '/assets'));
 app.get('/', function(req, res){
-  //render the index.jade template
-  //don't provide variables - we'll use socket.io for that
-  res.render('index');
+  let file = req.query.file;
+  if (file) {
+    try {
+      var content = fs.readFileSync(file, "utf8");
+      res.render('report', {file: file, content: content});
+    } catch (err) {
+      res.render('error', {file: file, err: err});
+    }
+  } else {
+    res.render('index');
+  }
 });
 
 var server = app.listen(3000);
@@ -26,6 +34,26 @@ var io = require('socket.io').listen(server);
 var sock = null;
 var fs = require('fs');
 var stream = null;
+
+// load simulated data
+var simulation = false;
+var simulatedData = [];
+var simulatedIndex = 0;
+var simulationInterval = null;
+fs.readFile(__dirname + '/data/signals', (err, data) => {
+  if (err) throw err;
+  var lines = data.toString().split("|")
+  lines.splice(0, 4)
+  for (line of lines) {
+    var data = line.split(",").map(s => parseInt(s))
+    buf = Buffer.allocUnsafe(12);
+    buf.writeUInt32LE(data[0], 0);
+    buf.writeUInt32LE(data[1], 4);
+    buf.writeUInt32LE(data[2], 8);
+    simulatedData.push(buf)
+  }
+});
+
 io.sockets.on('connection', function (socket) {
   sock = socket;
   sock.on('user', function (data) {
@@ -43,6 +71,33 @@ io.sockets.on('connection', function (socket) {
       stream = null;
     }
     console.log(data);
+  });
+
+  sock.on('event', function (evt) {
+    if (stream != null) {
+      stream.write('|EVENT,' + evt);
+    }
+    console.log("wakeup");
+  });
+
+  sock.on('simulate', function () {
+    if (simulationInterval) {
+      clearInterval(simulationInterval);
+      simulationInterval = null;
+    }
+
+    simulation = !simulation
+    if (simulation) {
+      simulatedIndex = 0;
+      simulationInterval = setInterval(function() {
+        sendData(simulatedData[simulatedIndex]);
+        simulatedIndex += 1;
+        if (simulatedIndex >= simulatedData.length) {
+          console.log("reset");
+          simulatedIndex = 0;
+        }
+      }, 100);
+    }
   });
 });
 

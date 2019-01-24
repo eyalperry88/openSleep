@@ -26,11 +26,25 @@ body {
   stroke: #FF0000;
   stroke-width: 1.5px;
 }
+.axis-hr text{
+  fill: #FF0000;
+}
 
 .line-eda {
   fill: none;
   stroke: #0000FF;
   stroke-width: 1.5px;
+}
+.axis-eda text{
+  fill: #0000FF;
+}
+
+
+.line-wakeup {
+  fill: none;
+  stroke: #00CCCC;
+  stroke-width: 3px;
+  stroke-dasharray: 10,10;
 }
 
 #channels {
@@ -67,10 +81,10 @@ body {
   background: rgba(255, 0, 0, 0.1);
 }
 
+
 #channel-eda {
   background: rgba(0, 0, 255, 0.1);
 }
-
 #title {
   font-size: 60px;
   margin: 20px 0px 20px 20px;
@@ -80,6 +94,34 @@ body {
 #plot {
   width: calc(100% - 200px);
   height: 600px;
+}
+
+#big_plot {
+  width: calc(100%);
+  height: 600px;
+}
+
+#buttons {
+  margin-top: 50px;
+  width: calc(100% - 200px);
+  text-align:center;
+}
+#buttons input[type=submit] {
+    width: 200px;
+    height: 50px;
+    margin: 5px 25px;
+    padding:5px 15px;
+    background:rgba(0, 0, 0, .1);
+    border:0 none;
+    cursor:pointer;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: 'Roboto', sans-serif;
+}
+#buttons input[type=submit]:hover {
+    background:rgba(0, 0, 0, .3);
 }
 
 #zzz {
