@@ -4,7 +4,7 @@
 // https://github.com/RFduino/RFduino/blob/master/libraries/RFduinoBLE/examples/Temperature/Temperature.ino
 //
 // (c) 2014 Don Coleman
-var noble = require('../noble'),
+var noble = require('./noble'),
     rfduino = require('./rfduino'),
     _ = require('underscore');
 
@@ -19,7 +19,7 @@ app.get('/', function(req, res){
   let file = req.query.file;
   if (file) {
     try {
-      var content = fs.readFileSync(file, "utf8");
+      var content = fs.readFileSync("/data/" + file, "utf8");
       res.render('report', {file: file, content: content});
     } catch (err) {
       res.render('error', {file: file, err: err});
@@ -40,7 +40,7 @@ var simulation = false;
 var simulatedData = [];
 var simulatedIndex = 0;
 var simulationInterval = null;
-fs.readFile(__dirname + '/data/signals', (err, data) => {
+fs.readFile('/data/signals', (err, data) => {
   if (err) throw err;
   var lines = data.toString().split("|")
   lines.splice(0, 4)
@@ -58,7 +58,7 @@ io.sockets.on('connection', function (socket) {
   sock = socket;
   sock.on('user', function (data) {
     if (data.recording == 'start') {
-      stream = fs.createWriteStream(data.file);
+      stream = fs.createWriteStream('/data/' + data.file);
       stream.write(data.firstName);
       stream.write('|');
       stream.write(data.secondName);

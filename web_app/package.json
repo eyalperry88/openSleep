@@ -12,7 +12,7 @@
     "socket.io": "^2.0.4",
     "socket.io-client": "^2.0.4",
     "underscore": "^1.8.3",
-    "xpc-connection": "^0.1.4"
+    "bluetooth-hci-socket": "^0.5.1"
   },
   "engines": {
     "node": ">=0.10.22"

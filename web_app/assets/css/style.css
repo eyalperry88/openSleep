@@ -42,6 +42,13 @@ body {
 
 .line-wakeup {
   fill: none;
+  stroke: #990099;
+  stroke-width: 3px;
+  stroke-dasharray: 10,10;
+}
+
+.line-calibration {
+  fill: none;
   stroke: #00CCCC;
   stroke-width: 3px;
   stroke-dasharray: 10,10;

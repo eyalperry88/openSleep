@@ -211,6 +211,9 @@ document.addEventListener("DOMContentLoaded", function(){
       if (countdownTimer) {
         clearTimeout(countdownTimer)
       }
+
+      window.open('/?file=' + $("#file").val(), "_blank")
+      $("#file").val($("#file").val() + ".1")
     }
     var firstName = document.getElementById("first-name").value;
     var lastName = document.getElementById("last-name").value;

@@ -1,0 +1,38 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset='utf-8')
+    title openSleep - #{file}
+    script(src='/socket.io/socket.io.js')
+    script(src='http://code.jquery.com/jquery-1.10.1.min.js')
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    script(src='/js/multithread.js')
+    script(src='/js/d3.v4.min.js')
+    script(src='/js/hr.js')
+    script.
+      var content = "#{content}";
+    script(src='/js/report.js')
+ body
+    #title openSleep
+    img(src="img/zzz.svg" id="zzz")
+    #user
+      #user-first-name.user-elem
+        .user-label First Name
+        input(type="text", name="first_name" id="first-name" disabled)
+      #user-last-name.user-elem
+        .user-label Last Name
+        input(type="text", name="last_name" id="last-name" disabled)
+      #user-age.user-elem
+        .user-label Age
+        input(type="text", name="age" id="age" disabled)
+      #user-gender.user-elem
+        .user-label Gender
+        select#gender
+          option(value="male") Male
+          option(value="female") Female
+          option(value="undefined") Undefined
+      #user-file.user-elem
+        .user-label File Name
+        input(type="text", name="file" id="file" disabled value="#{file}")
+    svg(width="1400" height="500" id="big_plot")
