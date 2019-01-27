@@ -35,4 +35,16 @@ html(lang="en")
       #user-file.user-elem
         .user-label File Name
         input(type="text", name="file" id="file" disabled value="#{file}")
-    svg(width="1400" height="500" id="big_plot")
+    #channels
+      #channel-bpm.channel
+        .channel-name BPM
+        input(type="text", id="delta-hr" value="5" class="deltas")
+      #channel-flex.channel
+        .channel-name Flex
+        input(type="text", id="delta-flex" value="8" class="deltas")
+      #channel-eda.channel
+        .channel-name EDA
+        input(type="text", id="delta-eda" value="4" class="deltas")
+      #buttons
+        input(type="submit" value="Refresh" id="refresh")
+    svg(width="1400" height="500" id="plot")

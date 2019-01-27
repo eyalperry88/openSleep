@@ -7,6 +7,10 @@ var dataEDA = [];
 var dataWakeups = [];
 var dataCalibrations = [];
 
+var meanBPM = 0;
+var meanFlex = 0;
+var meanEDA = 0;
+
 var lines = content.split("|")
 var firstName = lines[0];
 var lastName = lines[1];
@@ -20,10 +24,12 @@ for (var i = 4; i < lines.length; i++) {
     switch (row[1]) {
       case "calibrate_start":
         dataCalibrations.push(count);
-        // do something with the mean data
         break;
       case "calibrate_end":
         dataCalibrations.push(count);
+        meanFlex = parseFloat(row[2]);
+        meanBPM = parseFloat(row[3]);
+        meanEDA = parseFloat(row[4]);
         break;
       case "wakeup":
         dataWakeups.push(count);
@@ -49,8 +55,21 @@ for (var i = bufferLen; i < dataHR.length; i++) {
   }
 }
 
-console.log(dataBPM.length)
-console.log(dataHR.length)
+// if no calinration data present - add one at 3:00
+if (dataCalibrations.length == 0) {
+  dataCalibrations.push(1800);
+  var len = Math.min(1800, dataBPM.length);
+  for (var i = 0; i < len; i++) {
+    meanFlex += dataFlex[i];
+    meanEDA += dataEDA[i];
+  }
+  for (var i = bufferLen; i < len; i++) {
+    meanBPM += dataBPM[i];
+  }
+  meanFlex /= len;
+  meanBPM /= (len - bufferLen);
+  meanEDA /= len;
+}
 
 
 $(document).ready(function () {
@@ -59,7 +78,7 @@ $(document).ready(function () {
   $("#age").val(age);
   $("#gender").val(gender);
   var n = dataFlex.length;
-  var svg = d3.select("#big_plot"),
+  var svg = d3.select("#plot"),
       margin = {top: 20, right: 40, bottom: 20, left: 40},
       width = parseInt(svg.style("width").slice(0, -2));
       width = width  - margin.left - margin.right,
@@ -166,6 +185,7 @@ $(document).ready(function () {
     .attr("class", "line-wakeup")
   }
 
+  var lastCalibration = 0;
   for (calibration of dataCalibrations) {
     g.append("line")
     .attr("x1", x(calibration))  //<<== change your code here
@@ -173,5 +193,68 @@ $(document).ready(function () {
     .attr("x2", x(calibration))  //<<== and here
     .attr("y2", height)
     .attr("class", "line-calibration")
+    lastCalibration = calibration;
   }
+
+  var drawWakeupDots = function () {
+    d3.selectAll("circle").remove();
+
+    var i = lastCalibration + 1;
+    console.log("Flex Mean: " + meanFlex + " Delta: " + $("#delta-hr").val())
+    while (i < dataFlex.length && Math.abs(dataFlex[i] - meanFlex) <= parseFloat($("#delta-flex").val())) {
+      i++;
+    }
+    if (i < dataFlex.length) {
+      console.log("Flex Wakeup: ", dataFlex[i])
+      g.append("circle")
+      .attr("r", "8")
+      .attr("class", "circle-flex")
+      .attr("cx", x(i))
+      .attr("cy", y(dataFlex[i]))
+    }
+
+    var i = lastCalibration + 1;
+    console.log("HR Mean: " + meanBPM + " Delta: " + $("#delta-hr").val())
+    while (i < dataBPM.length && Math.abs(dataBPM[i] - meanBPM) <= parseFloat($("#delta-hr").val())) {
+      i++;
+    }
+    if (i < dataBPM.length) {
+      console.log("HR Wakeup: ", dataBPM[i])
+      g.append("circle")
+      .attr("r", "8")
+      .attr("class", "circle-hr")
+      .attr("cx", x(i))
+      .attr("cy", y(dataBPM[i] * 8))
+    }
+
+    var i = lastCalibration + 1;
+    console.log("EDA Mean: " + meanEDA + " Delta: " + $("#delta-eda").val())
+    while (i < dataEDA.length && Math.abs(dataEDA[i] - meanEDA) <= parseFloat($("#delta-eda").val())) {
+      i++;
+    }
+    if (i < dataEDA.length) {
+      console.log("EDA Wakeup: ", dataEDA[i])
+      g.append("circle")
+      .attr("r", "8")
+      .attr("class", "circle-eda")
+      .attr("cx", x(i))
+      .attr("cy", y(dataEDA[i] * 25))
+    }
+  }
+
+  drawWakeupDots();
+
+  $("#refresh").click(drawWakeupDots)
+  $(".deltas").focusout(drawWakeupDots)
+  $(".deltas").on('keypress', function (e) {
+    if (e.which == 13) {
+      //Disable textbox to prevent multiple submit
+      $(this).attr("disabled", "disabled");
+
+      drawWakeupDots();
+
+      //Enable the textbox again if needed.
+      $(this).removeAttr("disabled");
+    }
+  })
 })
