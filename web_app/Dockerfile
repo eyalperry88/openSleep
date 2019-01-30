@@ -4,7 +4,11 @@ FROM node:8
 WORKDIR /usr/src/app
 
 RUN apt-get update && apt-get install -y \
-  libudev-dev
+  bluetooth \
+  bluez \
+  libbluetooth-dev \
+  libudev-dev \
+  python3-pip
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
@@ -18,7 +22,9 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-RUN cd noble/ && npm install && cd ..
+RUN pip3 install -r requirements.txt
+
+# RUN cd noble/ && npm install && cd ..
 
 EXPOSE 3000
 CMD [ "npm", "start" ]

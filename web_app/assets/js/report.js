@@ -17,16 +17,17 @@ var lastName = lines[1];
 var age = lines[2];
 var gender = lines[3];
 var count = 0;
+var calibrationStart = 0;
 for (var i = 4; i < lines.length; i++) {
   var row = lines[i].split(",");
   if (row[0] == "EVENT") {
     console.log(row);
     switch (row[1]) {
       case "calibrate_start":
-        dataCalibrations.push(count);
+        calibrationStart = count;
         break;
       case "calibrate_end":
-        dataCalibrations.push(count);
+        dataCalibrations.push([calibrationStart, count]);
         meanFlex = parseFloat(row[2]);
         meanBPM = parseFloat(row[3]);
         meanEDA = parseFloat(row[4]);
@@ -57,7 +58,7 @@ for (var i = bufferLen; i < dataHR.length; i++) {
 
 // if no calinration data present - add one at 3:00
 if (dataCalibrations.length == 0) {
-  dataCalibrations.push(1800);
+  dataCalibrations.push([0, 1800]);
   var len = Math.min(1800, dataBPM.length);
   for (var i = 0; i < len; i++) {
     meanFlex += dataFlex[i];
@@ -187,13 +188,13 @@ $(document).ready(function () {
 
   var lastCalibration = 0;
   for (calibration of dataCalibrations) {
-    g.append("line")
-    .attr("x1", x(calibration))  //<<== change your code here
-    .attr("y1", 0)
-    .attr("x2", x(calibration))  //<<== and here
-    .attr("y2", height)
-    .attr("class", "line-calibration")
-    lastCalibration = calibration;
+    g.append("rect")
+    .attr("x", x(calibration[0]))  //<<== change your code here
+    .attr("y", 0)
+    .attr("width", x(calibration[1] - calibration[0]))  //<<== and here
+    .attr("height", height)
+    .attr("class", "rect-calibration")
+    lastCalibration = calibration[1];
   }
 
   var drawWakeupDots = function () {
@@ -207,7 +208,7 @@ $(document).ready(function () {
     if (i < dataFlex.length) {
       console.log("Flex Wakeup: ", dataFlex[i])
       g.append("circle")
-      .attr("r", "8")
+      .attr("r", "10")
       .attr("class", "circle-flex")
       .attr("cx", x(i))
       .attr("cy", y(dataFlex[i]))
@@ -221,7 +222,7 @@ $(document).ready(function () {
     if (i < dataBPM.length) {
       console.log("HR Wakeup: ", dataBPM[i])
       g.append("circle")
-      .attr("r", "8")
+      .attr("r", "10")
       .attr("class", "circle-hr")
       .attr("cx", x(i))
       .attr("cy", y(dataBPM[i] * 8))
@@ -235,7 +236,7 @@ $(document).ready(function () {
     if (i < dataEDA.length) {
       console.log("EDA Wakeup: ", dataEDA[i])
       g.append("circle")
-      .attr("r", "8")
+      .attr("r", "10")
       .attr("class", "circle-eda")
       .attr("cx", x(i))
       .attr("cy", y(dataEDA[i] * 25))

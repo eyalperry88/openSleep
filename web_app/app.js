@@ -4,7 +4,7 @@
 // https://github.com/RFduino/RFduino/blob/master/libraries/RFduinoBLE/examples/Temperature/Temperature.ino
 //
 // (c) 2014 Don Coleman
-var noble = require('./noble'),
+var noble = require('noble'),
     rfduino = require('./rfduino'),
     _ = require('underscore');
 
@@ -40,7 +40,7 @@ var simulation = false;
 var simulatedData = [];
 var simulatedIndex = 0;
 var simulationInterval = null;
-fs.readFile('/data/signals', (err, data) => {
+fs.readFile(__dirname + '/data/signals', (err, data) => {
   if (err) throw err;
   var lines = data.toString().split("|")
   lines.splice(0, 4)
@@ -140,6 +140,7 @@ var onDeviceDiscoveredCallback = function(peripheral) {
         console.log('RFduino is advertising \'' + rfduino.getAdvertisedServiceName(peripheral) + '\' service.');
 
         peripheral.on('connect', function() {
+          console.log('Connect');
             peripheral.discoverServices();
         });
 
@@ -176,19 +177,26 @@ var onDeviceDiscoveredCallback = function(peripheral) {
                 }
 
                 if (receiveCharacteristic) {
-                    receiveCharacteristic.on('read', function(data, isNotification) {
+                    receiveCharacteristic.on('data', function(data, isNotification) {
                         //console.log(peripheral.uuid);
                         //console.log(data);
                         sendData(data);
                     });
 
                     console.log('Subscribing for temperature notifications');
-                    receiveCharacteristic.notify(true);
+                    //receiveCharacteristic.notify(true);
+
+                    receiveCharacteristic.subscribe(function (err) {
+                      console.log("Subscribe err " + err);
+                    })
                 }
 
             });
 
-            rfduinoService.discoverCharacteristics();
+            setTimeout(function() {
+              rfduinoService.discoverCharacteristics();
+            }, 100);
+
 
         });
 
