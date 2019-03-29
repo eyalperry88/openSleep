@@ -188,14 +188,14 @@ var onDeviceDiscoveredCallback = function(peripheral) {
 
                     receiveCharacteristic.subscribe(function (err) {
                       console.log("Subscribe err " + err);
-                    })
+                    });
                 }
 
             });
 
             setTimeout(function() {
               rfduinoService.discoverCharacteristics();
-            }, 100);
+            }, 300);
 
 
         });
