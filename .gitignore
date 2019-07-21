@@ -4,3 +4,4 @@
 */node_modules/*
 **/prediction_server/data
 **/prediction_server/models
+data_analysis/data
